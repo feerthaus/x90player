@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hartanah Kita</title>
+  <meta name="description" content="Senarai hartanah untuk dijual dan disewa">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <nav class="topbar">
+        <a class="brand" href="#"><span class="logo">⌂</span> <span id="nama-syarikat">Hartanah Kita</span></a>
+        <a class="btn-wa small" id="wa-header" target="_blank" rel="noopener">WhatsApp Kami</a>
+      </nav>
+      <h1 id="slogan">Cari rumah, tanah &amp; kedai idaman anda</h1>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tujuan="semua">Semua</button>
+        <button class="tab" data-tujuan="jual">Untuk Dijual</button>
+        <button class="tab" data-tujuan="sewa">Untuk Disewa</button>
+      </div>
+      <div class="search">
+        <input id="q" type="search" placeholder="Cari lokasi, jenis atau kata kunci…">
+        <select id="jenis"><option value="">Semua jenis</option></select>
+        <select id="negeri"><option value="">Semua negeri</option></select>
+        <select id="harga">
+          <option value="">Semua harga</option>
+          <option value="0-1000">Bawah RM1,000</option>
+          <option value="1000-5000">RM1,000 – RM5,000</option>
+          <option value="5000-300000">RM5,000 – RM300k</option>
+          <option value="300000-600000">RM300k – RM600k</option>
+          <option value="600000-">Atas RM600k</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="toolbar">
+      <p id="kiraan"></p>
+      <label>Susun:
+        <select id="susun">
+          <option value="baru">Terkini</option>
+          <option value="murah">Harga: rendah ke tinggi</option>
+          <option value="mahal">Harga: tinggi ke rendah</option>
+        </select>
+      </label>
+    </div>
+    <section id="grid" class="grid"></section>
+    <p id="kosong" class="kosong" hidden>Tiada hartanah yang sepadan. Cuba tukar carian.</p>
+  </main>
+
+  <footer class="wrap footer">
+    <p>© <span id="tahun"></span> <span id="nama-footer"></span>. Semua maklumat tertakluk kepada perubahan.</p>
+  </footer>
+
+  <dialog id="detail"></dialog>
+
+  <script src="listings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
