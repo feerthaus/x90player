@@ -4,7 +4,8 @@
   "description": "Laman web ringkas untuk menyenaraikan hartanah (rumah, tanah, kedai) untuk **dijual** atau **disewa**. Pembeli boleh cari, tapis dan terus hubungi melalui **WhatsApp**. Tiada server atau database diperlukan.",
   "scripts": {
     "build": "tailwindcss -i src/input.css -o dist/style.css --minify",
-    "dev": "tailwindcss -i src/input.css -o dist/style.css --watch"
+    "dev": "tailwindcss -i src/input.css -o dist/style.css --watch",
+    "zip": "npm run build && rm -f hartanah.zip && zip -r hartanah.zip index.html app.js data.php install.php install.sql .htaccess dist admin inc uploads/.htaccess -x inc/config.php"
   },
   "repository": {
     "type": "git",
