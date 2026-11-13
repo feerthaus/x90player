@@ -9,6 +9,9 @@
 //  - gambar : senarai link gambar, contoh "gambar/rumah1.jpg".
 //             Biarkan [] kalau belum ada gambar.
 //  - status : "tersedia", "tempahan" atau "terjual"
+//  - pilihan: true untuk paparkan dalam "Hartanah pilihan" (maks 3)
+//  - peta   : (pilihan) alamat atau koordinat untuk peta, contoh
+//             "3.8077,103.3260". Kalau tiada, guna lokasi + negeri.
 // ============================================================
 
 const TETAPAN = {
@@ -22,6 +25,7 @@ const TETAPAN = {
 const SENARAI = [
   {
     id: "H001",
+    pilihan: true,
     tajuk: "Rumah Teres 2 Tingkat, Taman Aman",
     tujuan: "jual",
     jenis: "Rumah Teres",
@@ -38,6 +42,7 @@ const SENARAI = [
   },
   {
     id: "H002",
+    pilihan: true,
     tajuk: "Kondominium 3 Bilik, Fully Furnished",
     tujuan: "sewa",
     jenis: "Kondominium",
@@ -54,6 +59,7 @@ const SENARAI = [
   },
   {
     id: "H003",
+    pilihan: true,
     tajuk: "Banglo Setingkat Atas Tanah 1/2 Ekar",
     tujuan: "jual",
     jenis: "Banglo",

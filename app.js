@@ -185,6 +185,12 @@
             <p class="mt-2 leading-relaxed text-zinc-600">${esc(p.penerangan)}</p>
             ${(p.ciri || []).length ? `<h3 class="mt-8 font-semibold">Ciri-ciri</h3>
               <ul class="mt-3 grid gap-2 sm:grid-cols-2">${p.ciri.map((c) => `<li class="flex items-center gap-2 text-zinc-600"><svg class="h-4 w-4 text-brand-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5 9-10"/></svg>${esc(c)}</li>`).join("")}</ul>` : ""}
+            <h3 class="mt-8 font-semibold">Lokasi</h3>
+            <div class="mt-3 aspect-[16/9] overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100">
+              <iframe title="Peta lokasi" loading="lazy" class="h-full w-full" referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q=${encodeURIComponent(p.peta || `${p.lokasi}, ${p.negeri}, Malaysia`)}&z=14&output=embed"></iframe>
+            </div>
+            <p class="mt-2 text-xs text-zinc-400">Lokasi anggaran. Alamat tepat diberi semasa temujanji lawatan.</p>
           </div>
           <aside class="space-y-4 md:sticky md:top-20 md:self-start">
             <div class="rounded-2xl border border-zinc-200 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.05)]">
@@ -235,6 +241,55 @@
   // Setiap hartanah ada pautan sendiri: laman.com/#H001
   const ikutHash = () => { const id = decodeURIComponent(location.hash.slice(1)); id ? buka(id) : dlg.open && dlg.close(); };
   window.addEventListener("hashchange", ikutHash);
+
+  // ---------- Hartanah pilihan ----------
+  const pilihan = SENARAI.filter((p) => p.pilihan && p.status !== "terjual").slice(0, 3);
+  if (!pilihan.length) $("#pilihan-wrap").remove();
+  else $("#pilihan").innerHTML = pilihan.map((p, i) => `
+    <article data-id="${esc(p.id)}" tabindex="0" class="group relative cursor-pointer overflow-hidden rounded-3xl bg-zinc-100 ${i === 0 ? "aspect-[4/3] lg:row-span-2 lg:aspect-auto" : "aspect-[16/9] lg:aspect-auto lg:min-h-[240px]"}">
+      <div class="absolute inset-0 transition duration-700 group-hover:scale-105">${media(p)}</div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+      <span class="absolute left-4 top-4 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold">${p.tujuan === "jual" ? "Dijual" : "Disewa"}</span>
+      <div class="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+        <p class="text-sm text-white/80">${esc(p.lokasi)}, ${esc(p.negeri)}</p>
+        <h3 class="mt-1 font-bold ${i === 0 ? "text-2xl sm:text-3xl" : "text-lg"}">${esc(p.tajuk)}</h3>
+        <p class="mt-2 text-lg font-bold">${rm(p.harga)}${p.tujuan === "sewa" ? '<span class="text-sm font-medium text-white/70"> /bulan</span>' : ""}</p>
+      </div>
+    </article>`).join("");
+  $("#pilihan")?.addEventListener("click", (e) => { const c = e.target.closest("[data-id]"); if (c) location.hash = c.dataset.id; });
+
+  // ---------- Cari ikut kawasan ----------
+  const kawasan = {};
+  SENARAI.filter((p) => p.status !== "terjual").forEach((p) => {
+    const k = `${p.lokasi}|${p.negeri}`;
+    kawasan[k] = (kawasan[k] || 0) + 1;
+  });
+  const tonaKawasan = ["from-emerald-100 to-teal-50", "from-sky-100 to-indigo-50", "from-amber-100 to-orange-50", "from-violet-100 to-fuchsia-50", "from-rose-100 to-pink-50", "from-lime-100 to-green-50"];
+  $("#kawasan-grid").innerHTML = Object.entries(kawasan).sort((a, b) => b[1] - a[1]).map(([k, n], i) => {
+    const [lokasi, negeri] = k.split("|");
+    return `<button data-kawasan="${esc(lokasi)}" class="group flex aspect-square flex-col justify-end rounded-3xl bg-gradient-to-br ${tonaKawasan[i % tonaKawasan.length]} p-5 text-left transition hover:-translate-y-1">
+      <span class="text-lg font-bold">${esc(lokasi)}</span>
+      <span class="text-sm text-zinc-500">${esc(negeri)}</span>
+      <span class="mt-3 inline-flex w-fit rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold">${n} hartanah →</span>
+    </button>`;
+  }).join("");
+  $("#kawasan-grid").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-kawasan]");
+    if (!b) return;
+    state.tujuan = "semua"; state.jenis = "";
+    $("#negeri").value = ""; $("#harga").value = "";
+    $("#q").value = b.dataset.kawasan;
+    render();
+    $("#senarai").scrollIntoView({ behavior: "smooth" });
+  });
+
+  // ---------- Borang hubungi -> WhatsApp ----------
+  $("#borang").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const msg = `Salam, saya ${f.get("nama")} (${f.get("telefon")}). Saya ingin ${f.get("minat")}.` + (f.get("mesej") ? `\n\n${f.get("mesej")}` : "");
+    window.open(waLink(msg), "_blank", "noopener");
+  });
 
   render();
   ikutHash();
