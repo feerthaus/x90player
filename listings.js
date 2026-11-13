@@ -13,9 +13,10 @@
 
 const TETAPAN = {
   namaSyarikat: "Hartanah Kita",
-  slogan: "Cari rumah, tanah & kedai idaman anda",
+  slogan: "Cari rumah idaman anda.",
+  subslogan: "Rumah, tanah dan kedai untuk dijual atau disewa — urusan terus dengan pemilik, tanpa orang tengah.",
   whatsapp: "60123456789", // nombor WhatsApp, format 60xxxxxxxxx tanpa + atau -
-  emel: "",
+  telefon: "+60123456789", // untuk butang "Telefon"; biarkan "" kalau tak mahu
 };
 
 const SENARAI = [

@@ -1,0 +1,24 @@
+{
+  "name": "hartanah-marketplace",
+  "version": "1.0.0",
+  "description": "Laman web ringkas untuk menyenaraikan hartanah (rumah, tanah, kedai) untuk **dijual** atau **disewa**. Pembeli boleh cari, tapis dan terus hubungi melalui **WhatsApp**. Tiada server atau database diperlukan.",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o dist/style.css --minify",
+    "dev": "tailwindcss -i src/input.css -o dist/style.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feerthaus/x90player.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/feerthaus/x90player/issues"
+  },
+  "homepage": "https://github.com/feerthaus/x90player#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  },
+  "private": true
+}

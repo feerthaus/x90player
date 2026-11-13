@@ -1,61 +1,135 @@
 <!doctype html>
-<html lang="ms">
+<html lang="ms" class="scroll-smooth">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hartanah Kita</title>
-  <meta name="description" content="Senarai hartanah untuk dijual dan disewa">
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Rumah, tanah dan kedai untuk dijual dan disewa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dist/style.css">
 </head>
-<body>
-  <header class="hero">
-    <div class="wrap">
-      <nav class="topbar">
-        <a class="brand" href="#"><span class="logo">⌂</span> <span id="nama-syarikat">Hartanah Kita</span></a>
-        <a class="btn-wa small" id="wa-header" target="_blank" rel="noopener">WhatsApp Kami</a>
+<body class="bg-white font-sans text-zinc-900 antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-30 border-b border-zinc-100 bg-white/80 backdrop-blur">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="#" class="flex items-center gap-2.5">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-zinc-900 text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z"/></svg>
+        </span>
+        <span class="text-lg font-bold tracking-tight" data-nama>Hartanah Kita</span>
+      </a>
+      <nav class="hidden items-center gap-8 text-sm font-medium text-zinc-500 md:flex">
+        <a href="#senarai" class="hover:text-zinc-900">Hartanah</a>
+        <a href="#kenapa" class="hover:text-zinc-900">Kenapa kami</a>
+        <a href="#hubungi" class="hover:text-zinc-900">Hubungi</a>
       </nav>
-      <h1 id="slogan">Cari rumah, tanah &amp; kedai idaman anda</h1>
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tujuan="semua">Semua</button>
-        <button class="tab" data-tujuan="jual">Untuk Dijual</button>
-        <button class="tab" data-tujuan="sewa">Untuk Disewa</button>
-      </div>
-      <div class="search">
-        <input id="q" type="search" placeholder="Cari lokasi, jenis atau kata kunci…">
-        <select id="jenis"><option value="">Semua jenis</option></select>
-        <select id="negeri"><option value="">Semua negeri</option></select>
-        <select id="harga">
-          <option value="">Semua harga</option>
-          <option value="0-1000">Bawah RM1,000</option>
-          <option value="1000-5000">RM1,000 – RM5,000</option>
-          <option value="5000-300000">RM5,000 – RM300k</option>
-          <option value="300000-600000">RM300k – RM600k</option>
-          <option value="600000-">Atas RM600k</option>
-        </select>
-      </div>
+      <a data-wa-umum target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.2.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.3.1.2.1.7-.1 1.3Z"/></svg>
+        <span class="hidden sm:inline">WhatsApp</span>
+      </a>
     </div>
   </header>
 
-  <main class="wrap">
-    <div class="toolbar">
-      <p id="kiraan"></p>
-      <label>Susun:
-        <select id="susun">
-          <option value="baru">Terkini</option>
-          <option value="murah">Harga: rendah ke tinggi</option>
-          <option value="mahal">Harga: tinggi ke rendah</option>
-        </select>
-      </label>
+  <!-- Hero -->
+  <section class="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 sm:pt-20 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
+        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span><span id="stat-tersedia">0</span> hartanah tersedia sekarang
+      </p>
+      <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl" data-slogan>Cari rumah idaman anda.</h1>
+      <p class="mt-5 max-w-xl text-lg text-zinc-500" data-subslogan></p>
     </div>
-    <section id="grid" class="grid"></section>
-    <p id="kosong" class="kosong" hidden>Tiada hartanah yang sepadan. Cuba tukar carian.</p>
+
+    <!-- Search -->
+    <div class="mt-10 rounded-3xl border border-zinc-200 bg-white p-2 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+      <div class="flex gap-1 p-1">
+        <button data-tujuan="semua" class="tujuan rounded-full px-4 py-1.5 text-sm font-semibold">Semua</button>
+        <button data-tujuan="jual" class="tujuan rounded-full px-4 py-1.5 text-sm font-semibold">Beli</button>
+        <button data-tujuan="sewa" class="tujuan rounded-full px-4 py-1.5 text-sm font-semibold">Sewa</button>
+      </div>
+      <div class="grid gap-1 md:grid-cols-[2fr_1fr_1fr_auto]">
+        <label class="rounded-2xl px-4 py-3 transition hover:bg-zinc-50">
+          <span class="block text-xs font-semibold text-zinc-400">Lokasi atau kata kunci</span>
+          <input id="q" type="search" placeholder="Contoh: Kuantan, lot tepi…" class="field placeholder:text-zinc-400">
+        </label>
+        <label class="rounded-2xl px-4 py-3 transition hover:bg-zinc-50 md:border-l md:border-zinc-100">
+          <span class="block text-xs font-semibold text-zinc-400">Negeri</span>
+          <select id="negeri" class="field cursor-pointer"><option value="">Semua negeri</option></select>
+        </label>
+        <label class="rounded-2xl px-4 py-3 transition hover:bg-zinc-50 md:border-l md:border-zinc-100">
+          <span class="block text-xs font-semibold text-zinc-400">Bajet</span>
+          <select id="harga" class="field cursor-pointer">
+            <option value="">Semua harga</option>
+            <option value="0-1500">Bawah RM1,500</option>
+            <option value="1500-10000">RM1,500 – RM10k</option>
+            <option value="10000-300000">RM10k – RM300k</option>
+            <option value="300000-600000">RM300k – RM600k</option>
+            <option value="600000-">Atas RM600k</option>
+          </select>
+        </label>
+        <a href="#senarai" class="flex items-center justify-center gap-2 rounded-2xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg>Cari
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listings -->
+  <main id="senarai" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-24 sm:px-6 lg:px-8">
+    <div class="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2" id="jenis-chips"></div>
+    <div class="mt-6 flex items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">Hartanah terkini</h2>
+        <p id="kiraan" class="mt-1 text-sm text-zinc-500"></p>
+      </div>
+      <select id="susun" class="cursor-pointer rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium outline-none focus:border-zinc-400">
+        <option value="baru">Terkini</option>
+        <option value="murah">Harga terendah</option>
+        <option value="mahal">Harga tertinggi</option>
+        <option value="luas">Paling luas</option>
+      </select>
+    </div>
+    <div id="grid" class="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"></div>
+    <div id="kosong" class="hidden rounded-3xl border border-dashed border-zinc-200 py-20 text-center">
+      <p class="font-semibold">Tiada hartanah yang sepadan</p>
+      <p class="mt-1 text-sm text-zinc-500">Cuba ubah carian atau penapis anda.</p>
+      <button id="reset" class="mt-5 rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold hover:bg-zinc-50">Kosongkan penapis</button>
+    </div>
   </main>
 
-  <footer class="wrap footer">
-    <p>© <span id="tahun"></span> <span id="nama-footer"></span>. Semua maklumat tertakluk kepada perubahan.</p>
+  <!-- Why us -->
+  <section id="kenapa" class="border-y border-zinc-100 bg-zinc-50/60">
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-3 lg:px-8">
+      <div><div class="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-white text-xl shadow-sm ring-1 ring-zinc-100">🔑</div><h3 class="font-bold">Urusan terus dengan pemilik</h3><p class="mt-2 text-sm leading-relaxed text-zinc-500">Tiada orang tengah. Tanya, tawar dan lihat hartanah terus dengan kami.</p></div>
+      <div><div class="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-white text-xl shadow-sm ring-1 ring-zinc-100">📄</div><h3 class="font-bold">Dokumen jelas</h3><p class="mt-2 text-sm leading-relaxed text-zinc-500">Maklumat pegangan, geran dan keluasan dinyatakan dengan telus untuk setiap hartanah.</p></div>
+      <div><div class="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-white text-xl shadow-sm ring-1 ring-zinc-100">💬</div><h3 class="font-bold">Respons pantas</h3><p class="mt-2 text-sm leading-relaxed text-zinc-500">Hubungi melalui WhatsApp dan dapatkan jawapan serta temujanji lawatan dengan cepat.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="hubungi" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+    <div class="relative overflow-hidden rounded-[2rem] bg-zinc-900 px-8 py-14 text-white sm:px-14">
+      <div class="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-brand-500/30 blur-3xl"></div>
+      <div class="relative max-w-xl">
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Ada hartanah untuk dijual atau disewa?</h2>
+        <p class="mt-4 text-zinc-400">Hubungi kami dan kami bantu senaraikan hartanah anda.</p>
+        <a data-wa-umum target="_blank" rel="noopener" class="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-200">Hubungi melalui WhatsApp →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-zinc-100">
+    <div class="mx-auto flex max-w-7xl flex-col justify-between gap-2 px-4 py-8 text-sm text-zinc-400 sm:flex-row sm:px-6 lg:px-8">
+      <p>© <span id="tahun"></span> <span data-nama></span></p>
+      <p>Semua maklumat tertakluk kepada perubahan.</p>
+    </div>
   </footer>
 
-  <dialog id="detail"></dialog>
+  <!-- Detail -->
+  <dialog id="detail" class="m-0 h-full max-h-none w-full max-w-none bg-white p-0 sm:m-auto sm:h-auto sm:max-h-[92vh] sm:max-w-4xl sm:rounded-3xl"></dialog>
 
   <script src="listings.js"></script>
   <script src="app.js"></script>

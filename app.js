@@ -1,116 +1,241 @@
 (() => {
-  const $ = (s) => document.querySelector(s);
-  const rm = (n) => "RM" + n.toLocaleString("en-MY");
-  const warna = {
-    "Rumah Teres": ["#2f7d62", "#174a3a"], Banglo: ["#7a5c2e", "#3f2f17"],
-    "Semi-D": ["#3c6e8f", "#1d3a4d"], Kondominium: ["#5a4f8a", "#2c2650"],
-    Apartment: ["#8a4f6a", "#4a2638"], Tanah: ["#6b8a3a", "#34461a"], Kedai: ["#a0612b", "#55300f"],
-  };
-  const ikon = { Tanah: "🌳", Kedai: "🏪", Kondominium: "🏢", Apartment: "🏢" };
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const rm = (n) => "RM" + Math.round(n).toLocaleString("en-MY");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-  function gambarBg(p, i = 0) {
-    if (p.gambar && p.gambar.length) return { style: `background-image:url('${encodeURI(p.gambar[i])}')`, html: "" };
-    const [a, b] = warna[p.jenis] || ["#3d5a50", "#1e2f29"];
-    return { style: `background:linear-gradient(135deg,${a},${b})`, html: `<div>${ikon[p.jenis] || "🏠"}<span>${esc(p.jenis)}</span></div>`, ph: true };
-  }
-  const hargaTxt = (p) => rm(p.harga) + (p.tujuan === "sewa" ? " <small>/ bulan</small>" : "");
-  const luas = (p) => `${p.keluasan.toLocaleString("en-MY")} ${p.unit === "ekar" ? "ekar" : "kp"}`;
   const waLink = (msg) => `https://wa.me/${TETAPAN.whatsapp}?text=${encodeURIComponent(msg)}`;
+  const luas = (p) => `${p.keluasan.toLocaleString("en-MY")} ${p.unit === "ekar" ? "ekar" : "kp"}`;
+  const hargaHtml = (p, big) =>
+    `${rm(p.harga)}${p.tujuan === "sewa" ? `<span class="${big ? "text-base" : "text-sm"} font-medium text-zinc-400"> /bulan</span>` : ""}`;
 
-  // Tetapan
+  // ---------- Placeholder bila tiada gambar ----------
+  const tona = {
+    "Rumah Teres": "from-emerald-100 to-teal-50", Banglo: "from-amber-100 to-orange-50", "Semi-D": "from-sky-100 to-indigo-50",
+    Kondominium: "from-violet-100 to-fuchsia-50", Apartment: "from-rose-100 to-pink-50", Tanah: "from-lime-100 to-green-50", Kedai: "from-orange-100 to-yellow-50",
+  };
+  const ikon = {
+    Tanah: '<path d="M3 20h18M5 20l4-8 3 4 3-6 4 10"/>',
+    Kedai: '<path d="M4 9h16l-1-5H5L4 9Zm0 0v11h16V9M9 20v-6h6v6"/>',
+    Kondominium: '<path d="M5 21V4h10v17M15 9h4v12M8 8h2m-2 4h2m-2 4h2"/>',
+    Apartment: '<path d="M5 21V4h10v17M15 9h4v12M8 8h2m-2 4h2m-2 4h2"/>',
+  };
+  const placeholder = (p, cls = "") => `
+    <div class="grid h-full w-full place-items-center bg-gradient-to-br ${tona[p.jenis] || "from-zinc-100 to-zinc-50"} ${cls}">
+      <svg class="h-14 w-14 text-zinc-900/20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        ${ikon[p.jenis] || '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z"/>'}</svg>
+    </div>`;
+  const media = (p, i = 0, cls = "") =>
+    p.gambar && p.gambar.length
+      ? `<img src="${esc(p.gambar[i])}" alt="${esc(p.tajuk)}" loading="lazy" class="h-full w-full object-cover ${cls}">`
+      : placeholder(p, cls);
+
+  // ---------- Kegemaran (disimpan dalam pelayar) ----------
+  let fav = new Set();
+  try { fav = new Set(JSON.parse(localStorage.getItem("fav") || "[]")); } catch {}
+  const simpanFav = () => { try { localStorage.setItem("fav", JSON.stringify([...fav])); } catch {} };
+  const hati = (on) => `<svg class="h-5 w-5" viewBox="0 0 24 24" fill="${on ? "#f43f5e" : "rgba(0,0,0,.25)"}" stroke="#fff" stroke-width="2"><path d="M12 21s-7.5-4.6-9.5-9.3C1 8 3.4 4.5 7 4.5c2 0 3.5 1 5 2.8 1.5-1.8 3-2.8 5-2.8 3.6 0 6 3.5 4.5 7.2C19.5 16.4 12 21 12 21Z"/></svg>`;
+
+  // ---------- Tetapan laman ----------
   document.title = TETAPAN.namaSyarikat;
-  $("#nama-syarikat").textContent = TETAPAN.namaSyarikat;
-  $("#nama-footer").textContent = TETAPAN.namaSyarikat;
-  $("#slogan").textContent = TETAPAN.slogan;
+  $$("[data-nama]").forEach((e) => (e.textContent = TETAPAN.namaSyarikat));
+  $("[data-slogan]").textContent = TETAPAN.slogan;
+  $("[data-subslogan]").textContent = TETAPAN.subslogan || "";
+  $$("[data-wa-umum]").forEach((a) => (a.href = waLink(`Salam, saya ingin bertanya tentang hartanah ${TETAPAN.namaSyarikat}.`)));
   $("#tahun").textContent = new Date().getFullYear();
-  $("#wa-header").href = waLink(`Salam, saya berminat dengan hartanah ${TETAPAN.namaSyarikat}.`);
+  $("#stat-tersedia").textContent = SENARAI.filter((p) => p.status === "tersedia").length;
 
-  // Isi pilihan penapis
-  const isi = (sel, vals) => [...new Set(vals)].sort().forEach((v) => sel.add(new Option(v, v)));
-  isi($("#jenis"), SENARAI.map((p) => p.jenis));
-  isi($("#negeri"), SENARAI.map((p) => p.negeri));
+  // ---------- Penapis ----------
+  const state = { tujuan: "semua", jenis: "" };
+  [...new Set(SENARAI.map((p) => p.negeri))].sort().forEach((n) => $("#negeri").add(new Option(n, n)));
+  const jenisList = ["", ...new Set(SENARAI.map((p) => p.jenis))];
+  $("#jenis-chips").innerHTML = jenisList.map((j) => `<button data-jenis="${esc(j)}" class="chip">${j ? esc(j) : "Semua jenis"}</button>`).join("");
 
-  let tujuan = "semua";
-  document.querySelectorAll(".tab").forEach((t) =>
-    t.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === t));
-      tujuan = t.dataset.tujuan;
-      render();
-    })
-  );
-  ["#q", "#jenis", "#negeri", "#harga", "#susun"].forEach((s) => $(s).addEventListener("input", render));
+  function syncButtons() {
+    $$(".tujuan").forEach((b) => {
+      const on = b.dataset.tujuan === state.tujuan;
+      b.className = `tujuan rounded-full px-4 py-1.5 text-sm font-semibold transition ${on ? "bg-zinc-900 text-white" : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"}`;
+    });
+    $$("#jenis-chips button").forEach((b) => b.classList.toggle("chip-on", b.dataset.jenis === state.jenis));
+  }
+  $$(".tujuan").forEach((b) => b.addEventListener("click", () => { state.tujuan = b.dataset.tujuan; render(); }));
+  $("#jenis-chips").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { state.jenis = b.dataset.jenis; render(); } });
+  ["#q", "#negeri", "#harga", "#susun"].forEach((s) => $(s).addEventListener("input", render));
+  $("#reset").addEventListener("click", () => {
+    state.tujuan = "semua"; state.jenis = "";
+    $("#q").value = ""; $("#negeri").value = ""; $("#harga").value = "";
+    render();
+  });
 
   function tapis() {
     const q = $("#q").value.trim().toLowerCase();
-    const jenis = $("#jenis").value, negeri = $("#negeri").value;
+    const negeri = $("#negeri").value;
     const [min, max] = ($("#harga").value || "-").split("-").map((x) => (x === "" ? null : +x));
     let out = SENARAI.filter((p) =>
-      (tujuan === "semua" || p.tujuan === tujuan) &&
-      (!jenis || p.jenis === jenis) && (!negeri || p.negeri === negeri) &&
+      (state.tujuan === "semua" || p.tujuan === state.tujuan) &&
+      (!state.jenis || p.jenis === state.jenis) && (!negeri || p.negeri === negeri) &&
       (min == null || p.harga >= min) && (max == null || p.harga < max) &&
       (!q || [p.tajuk, p.lokasi, p.negeri, p.jenis, p.penerangan, ...(p.ciri || [])].join(" ").toLowerCase().includes(q))
     );
+    const kp = (p) => (p.unit === "ekar" ? p.keluasan * 43560 : p.keluasan);
     const s = $("#susun").value;
-    if (s === "murah") out = [...out].sort((a, b) => a.harga - b.harga);
-    if (s === "mahal") out = [...out].sort((a, b) => b.harga - a.harga);
-    // Yang terjual sentiasa di bawah
+    if (s === "murah") out.sort((a, b) => a.harga - b.harga);
+    if (s === "mahal") out.sort((a, b) => b.harga - a.harga);
+    if (s === "luas") out.sort((a, b) => kp(b) - kp(a));
     return out.sort((a, b) => (a.status === "terjual") - (b.status === "terjual"));
   }
 
-  function render() {
-    const list = tapis();
-    $("#kiraan").textContent = `${list.length} hartanah dijumpai`;
-    $("#kosong").hidden = list.length > 0;
-    $("#grid").innerHTML = list.map((p) => {
-      const g = gambarBg(p);
-      const st = p.status !== "tersedia" ? `<div class="status ${p.status}">${p.status === "terjual" ? (p.tujuan === "sewa" ? "Disewa" : "Terjual") : "Ditempah"}</div>` : "";
-      return `<article class="card" tabindex="0" data-id="${esc(p.id)}">
-        <div class="thumb ${g.ph ? "ph" : ""}" style="${g.style}">${g.html}
-          <span class="badge b-${p.tujuan}">${p.tujuan === "jual" ? "Dijual" : "Disewa"}</span>${st}</div>
-        <div class="body">
-          <div class="price">${hargaTxt(p)}</div>
-          <p class="title">${esc(p.tajuk)}</p>
-          <p class="loc">📍 ${esc(p.lokasi)}, ${esc(p.negeri)}</p>
-          <div class="specs">${p.bilik ? `<span>🛏 ${p.bilik}</span>` : ""}${p.bilikAir ? `<span>🛁 ${p.bilikAir}</span>` : ""}<span>📐 ${luas(p)}</span></div>
-        </div></article>`;
-    }).join("");
+  const labelStatus = (p) =>
+    p.status === "terjual" ? (p.tujuan === "sewa" ? "Sudah disewa" : "Terjual") : p.status === "tempahan" ? "Ditempah" : "";
+
+  function kad(p) {
+    const st = labelStatus(p);
+    const dim = p.status === "terjual" ? "opacity-60 grayscale" : "";
+    return `<article class="group cursor-pointer" data-id="${esc(p.id)}" tabindex="0">
+      <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100 ${dim}">
+        <div class="h-full w-full transition duration-500 group-hover:scale-105">${media(p)}</div>
+        <div class="absolute left-3 top-3 flex gap-1.5">
+          <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold shadow-sm">${p.tujuan === "jual" ? "Dijual" : "Disewa"}</span>
+          ${st ? `<span class="rounded-full bg-zinc-900/90 px-2.5 py-1 text-xs font-semibold text-white">${st}</span>` : ""}
+        </div>
+        <button data-fav="${esc(p.id)}" aria-label="Simpan" class="absolute right-3 top-3 transition hover:scale-110">${hati(fav.has(p.id))}</button>
+        ${p.gambar && p.gambar.length > 1 ? `<span class="absolute bottom-3 right-3 rounded-full bg-black/50 px-2 py-0.5 text-xs font-medium text-white">1/${p.gambar.length}</span>` : ""}
+      </div>
+      <div class="mt-3 flex items-start justify-between gap-3">
+        <h3 class="line-clamp-1 font-semibold">${esc(p.tajuk)}</h3>
+      </div>
+      <p class="text-sm text-zinc-500">${esc(p.lokasi)}, ${esc(p.negeri)}</p>
+      <p class="mt-0.5 text-sm text-zinc-500">${[p.bilik ? `${p.bilik} bilik` : "", p.bilikAir ? `${p.bilikAir} bilik air` : "", luas(p)].filter(Boolean).join(" · ")}</p>
+      <p class="mt-2 text-lg font-bold">${hargaHtml(p)}</p>
+    </article>`;
   }
 
+  function render() {
+    syncButtons();
+    const list = tapis();
+    $("#kiraan").textContent = `${list.length} hartanah dijumpai`;
+    $("#kosong").classList.toggle("hidden", list.length > 0);
+    $("#grid").innerHTML = list.map(kad).join("");
+  }
+
+  $("#grid").addEventListener("click", (e) => {
+    const f = e.target.closest("[data-fav]");
+    if (f) {
+      e.stopPropagation();
+      const id = f.dataset.fav;
+      fav.has(id) ? fav.delete(id) : fav.add(id);
+      simpanFav();
+      f.innerHTML = hati(fav.has(id));
+      return;
+    }
+    const c = e.target.closest("[data-id]");
+    if (c) location.hash = c.dataset.id;
+  });
+  $("#grid").addEventListener("keydown", (e) => { const c = e.target.closest("[data-id]"); if (c && e.key === "Enter") location.hash = c.dataset.id; });
+
+  // ---------- Kalkulator pinjaman ----------
+  const ansuran = (harga, depositPct, kadar, tahun) => {
+    const P = harga * (1 - depositPct / 100), r = kadar / 100 / 12, n = tahun * 12;
+    return r ? (P * r) / (1 - Math.pow(1 + r, -n)) : P / n;
+  };
+  const kalkulator = (p) => `
+    <div class="rounded-2xl border border-zinc-200 p-5">
+      <p class="font-semibold">Anggaran bayaran bulanan</p>
+      <p class="mt-1 text-3xl font-extrabold tracking-tight" id="k-hasil"></p>
+      <div class="mt-4 grid grid-cols-3 gap-3 text-xs font-semibold text-zinc-400">
+        <label>Deposit (%)<input id="k-dep" type="number" min="0" max="90" value="10" class="mt-1 w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"></label>
+        <label>Faedah (%)<input id="k-kadar" type="number" min="0" step="0.05" value="4.2" class="mt-1 w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"></label>
+        <label>Tempoh (thn)<input id="k-thn" type="number" min="1" max="35" value="35" class="mt-1 w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"></label>
+      </div>
+      <p class="mt-3 text-xs text-zinc-400">Anggaran sahaja. Kadar sebenar bergantung kepada bank.</p>
+    </div>`;
+
+  // ---------- Paparan butiran ----------
   const dlg = $("#detail");
   function buka(id) {
     const p = SENARAI.find((x) => x.id === id);
     if (!p) return;
-    let i = 0;
     const n = (p.gambar || []).length;
     const fakta = [
-      ["Jenis", p.jenis], ["Pegangan", p.pegangan], ["Keluasan", luas(p)],
-      p.bilik ? ["Bilik tidur", p.bilik] : null, p.bilikAir ? ["Bilik air", p.bilikAir] : null, ["Rujukan", p.id],
+      ["Jenis", p.jenis], ["Keluasan", luas(p)], p.bilik ? ["Bilik tidur", p.bilik] : null,
+      p.bilikAir ? ["Bilik air", p.bilikAir] : null, ["Pegangan", p.pegangan], ["Rujukan", p.id],
     ].filter(Boolean);
-    const g = gambarBg(p);
-    dlg.innerHTML = `<button class="close" aria-label="Tutup">✕</button>
-      <div class="d-img ${g.ph ? "ph" : ""}" style="${g.style}">${g.html}
-        ${n > 1 ? `<div class="d-nav"><button data-d="-1" aria-label="Sebelum">‹</button><button data-d="1" aria-label="Seterusnya">›</button></div>` : ""}</div>
-      <div class="d-body">
-        <div class="price">${hargaTxt(p)}</div>
-        <h2>${esc(p.tajuk)}</h2>
-        <p class="loc">📍 ${esc(p.lokasi)}, ${esc(p.negeri)}</p>
-        <div class="facts">${fakta.map(([k, v]) => `<div class="fact"><b>${k}</b>${esc(v)}</div>`).join("")}</div>
-        <p>${esc(p.penerangan)}</p>
-        <div class="chips">${(p.ciri || []).map((c) => `<span class="chip">${esc(c)}</span>`).join("")}</div>
-        ${p.status === "terjual" ? `<p class="loc">Hartanah ini sudah tidak tersedia.</p>` :
-          `<a class="btn-wa" target="_blank" rel="noopener" href="${waLink(`Salam, saya berminat dengan "${p.tajuk}" (Ruj: ${p.id}). Masih tersedia?`)}">💬 Tanya melalui WhatsApp</a>`}
-      </div>`;
-    dlg.querySelector(".close").onclick = () => dlg.close();
-    dlg.querySelectorAll(".d-nav button").forEach((b) => (b.onclick = () => {
-      i = (i + +b.dataset.d + n) % n;
-      dlg.querySelector(".d-img").style.backgroundImage = `url('${encodeURI(p.gambar[i])}')`;
+    const st = labelStatus(p);
+    const tersedia = p.status !== "terjual";
+    dlg.innerHTML = `
+      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/90 px-4 py-3 backdrop-blur sm:px-6">
+        <button data-tutup class="grid h-9 w-9 place-items-center rounded-full hover:bg-zinc-100" aria-label="Tutup">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <button data-kongsi class="rounded-full px-3 py-1.5 text-sm font-semibold underline-offset-4 hover:bg-zinc-100">Kongsi</button>
+      </div>
+      <div class="px-4 pb-8 pt-4 sm:px-6">
+        <div class="relative aspect-[16/10] overflow-hidden rounded-2xl bg-zinc-100" id="d-utama">${media(p)}</div>
+        ${n > 1 ? `<div class="no-scrollbar mt-3 flex gap-2 overflow-x-auto">${p.gambar.map((g, i) => `<button data-g="${i}" class="h-16 w-24 shrink-0 overflow-hidden rounded-xl ring-2 ${i ? "ring-transparent" : "ring-zinc-900"}"><img src="${esc(g)}" alt="" class="h-full w-full object-cover"></button>`).join("")}</div>` : ""}
+        <div class="mt-6 grid gap-8 md:grid-cols-[1fr_300px]">
+          <div>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-semibold">${p.tujuan === "jual" ? "Dijual" : "Disewa"}</span>
+              ${st ? `<span class="rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-semibold text-white">${st}</span>` : ""}
+            </div>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">${esc(p.tajuk)}</h2>
+            <p class="mt-1 text-zinc-500">${esc(p.lokasi)}, ${esc(p.negeri)}</p>
+            <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-200 sm:grid-cols-3">
+              ${fakta.map(([k, v]) => `<div class="bg-white p-4"><dt class="text-xs font-medium text-zinc-400">${k}</dt><dd class="mt-0.5 font-semibold">${esc(v)}</dd></div>`).join("")}
+            </dl>
+            <h3 class="mt-8 font-semibold">Tentang hartanah ini</h3>
+            <p class="mt-2 leading-relaxed text-zinc-600">${esc(p.penerangan)}</p>
+            ${(p.ciri || []).length ? `<h3 class="mt-8 font-semibold">Ciri-ciri</h3>
+              <ul class="mt-3 grid gap-2 sm:grid-cols-2">${p.ciri.map((c) => `<li class="flex items-center gap-2 text-zinc-600"><svg class="h-4 w-4 text-brand-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5 9-10"/></svg>${esc(c)}</li>`).join("")}</ul>` : ""}
+          </div>
+          <aside class="space-y-4 md:sticky md:top-20 md:self-start">
+            <div class="rounded-2xl border border-zinc-200 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.05)]">
+              <p class="text-3xl font-extrabold tracking-tight">${hargaHtml(p, true)}</p>
+              ${tersedia ? `
+                <a target="_blank" rel="noopener" href="${waLink(`Salam, saya berminat dengan "${p.tajuk}" (Ruj: ${p.id}). Masih tersedia? ${location.href.split("#")[0]}#${p.id}`)}"
+                   class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 font-semibold text-white transition hover:bg-brand-700">Tanya melalui WhatsApp</a>
+                ${TETAPAN.telefon ? `<a href="tel:${esc(TETAPAN.telefon)}" class="mt-2 flex w-full items-center justify-center rounded-xl border border-zinc-200 py-3 font-semibold transition hover:bg-zinc-50">Telefon</a>` : ""}
+                <a target="_blank" rel="noopener" href="${waLink(`Salam, saya ingin membuat temujanji untuk melihat "${p.tajuk}" (Ruj: ${p.id}).`)}"
+                   class="mt-2 flex w-full items-center justify-center rounded-xl py-2 text-sm font-semibold text-zinc-500 underline-offset-4 hover:underline">Tempah lawatan</a>`
+                : `<p class="mt-4 text-sm text-zinc-500">Hartanah ini sudah tidak tersedia.</p>`}
+            </div>
+            ${p.tujuan === "jual" && tersedia ? kalkulator(p) : ""}
+          </aside>
+        </div>
+      </div>
+      ${tersedia ? `<div class="sticky bottom-0 flex items-center justify-between gap-3 border-t border-zinc-100 bg-white/95 px-4 py-3 backdrop-blur md:hidden">
+        <p class="text-lg font-extrabold">${hargaHtml(p)}</p>
+        <a target="_blank" rel="noopener" href="${waLink(`Salam, saya berminat dengan "${p.tajuk}" (Ruj: ${p.id}). Masih tersedia? ${location.href.split("#")[0]}#${p.id}`)}"
+           class="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white">WhatsApp</a></div>` : ""}`;
+
+    $$("[data-g]", dlg).forEach((b) => (b.onclick = () => {
+      $("#d-utama", dlg).innerHTML = media(p, +b.dataset.g);
+      $$("[data-g]", dlg).forEach((x) => x.classList.replace("ring-zinc-900", "ring-transparent"));
+      b.classList.replace("ring-transparent", "ring-zinc-900");
     }));
-    dlg.showModal();
+    if ($("#k-hasil", dlg)) {
+      const kira = () => ($("#k-hasil", dlg).textContent = rm(ansuran(p.harga, +$("#k-dep", dlg).value, +$("#k-kadar", dlg).value, +$("#k-thn", dlg).value || 1)) + " /bln");
+      $$("#k-dep,#k-kadar,#k-thn", dlg).forEach((i) => i.addEventListener("input", kira));
+      kira();
+    }
+    $("[data-tutup]", dlg).onclick = () => tutup();
+    $("[data-kongsi]", dlg).onclick = async (e) => {
+      const url = location.href;
+      try {
+        if (navigator.share) await navigator.share({ title: p.tajuk, url });
+        else { await navigator.clipboard.writeText(url); e.target.textContent = "Pautan disalin ✓"; }
+      } catch {}
+    };
+    if (!dlg.open) dlg.showModal();
+    dlg.scrollTop = 0;
+    document.body.style.overflow = "hidden";
   }
-  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
-  $("#grid").addEventListener("click", (e) => { const c = e.target.closest(".card"); if (c) buka(c.dataset.id); });
-  $("#grid").addEventListener("keydown", (e) => { const c = e.target.closest(".card"); if (c && e.key === "Enter") buka(c.dataset.id); });
+  function tutup() { history.pushState("", "", location.pathname + location.search); dlg.close(); }
+  dlg.addEventListener("close", () => { document.body.style.overflow = ""; if (location.hash) history.pushState("", "", location.pathname + location.search); });
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) tutup(); });
+
+  // Setiap hartanah ada pautan sendiri: laman.com/#H001
+  const ikutHash = () => { const id = decodeURIComponent(location.hash.slice(1)); id ? buka(id) : dlg.open && dlg.close(); };
+  window.addEventListener("hashchange", ikutHash);
 
   render();
+  ikutHash();
 })();

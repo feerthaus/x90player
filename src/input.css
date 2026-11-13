@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .chip { @apply whitespace-nowrap rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900; }
+  .chip-on { @apply border-zinc-900 bg-zinc-900 text-white hover:text-white; }
+  .field { @apply w-full rounded-xl border-0 bg-transparent px-0 py-0 text-sm font-medium text-zinc-900 focus:ring-0 outline-none; }
+}
+dialog::backdrop { background: rgb(9 9 11 / .5); backdrop-filter: blur(4px); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
